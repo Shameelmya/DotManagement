@@ -112,16 +112,16 @@
   justify-content: space-around; /* Evenly space out icons to fill width */
   align-items: center; 
   height: 85px;
-  background-color: #FFFFFF;
+  background-color: var(--color-primary); /* Pink background */
   border-radius: 24px;
   position: fixed;
   bottom: 12px;
   left: 16px; /* Match standard page padding */
   right: 16px; /* Match standard page padding */
   z-index: 50;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+  box-shadow: 0 8px 32px rgba(213, 55, 104, 0.3); /* Pink tinted shadow */
   padding: 0 4px; /* Less padding since space-around adds it naturally */
-  border: 1px solid var(--color-border-light);
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Subtle white border */
 }
 
 .mobile-bottom-nav .nav-item {
@@ -129,7 +129,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  color: var(--color-text-light);
+  color: rgba(255, 255, 255, 0.6); /* Translucent white text for inactive */
   gap: 4px; /* Gap between icon and text */
   width: 58px;
   text-decoration: none;
@@ -142,7 +142,7 @@
   width: 48px; /* Bit larger size */
   height: 48px; /* Bit larger size */
   border-radius: 16px;
-  background-color: var(--color-primary-soft); /* Light pink for inactive */
+  background-color: rgba(255, 255, 255, 0.15); /* Translucent white for inactive */
   transition: all 0.3s ease;
 }
 
@@ -150,7 +150,7 @@
   width: 24px;
   height: 24px;
   transition: all 0.3s ease;
-  color: var(--color-primary); /* Pink icon for inactive */
+  color: rgba(255, 255, 255, 0.8); /* Almost solid white icon for inactive */
 }
 
 .mobile-bottom-nav .nav-item span {
@@ -161,17 +161,16 @@
 
 /* Active State Design (Non-Center) */
 .mobile-bottom-nav .nav-item.active .icon-wrapper {
-  background-color: var(--color-primary);
-  /* Removed transform translateY to stop move-up animation */
-  box-shadow: 0 4px 12px rgba(213, 55, 104, 0.3);
+  background-color: #ffffff; /* Solid white wrapper when active */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .mobile-bottom-nav .nav-item.active .icon {
-  color: #ffffff; /* White icon when active */
+  color: var(--color-primary); /* Pink icon when active */
 }
 
 .mobile-bottom-nav .nav-item.active span {
-  color: var(--color-primary);
+  color: #ffffff; /* Solid white text when active */
 }
 
 /* --- Responsive Breakpoints --- */
