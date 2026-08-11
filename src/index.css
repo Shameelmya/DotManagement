@@ -179,6 +179,11 @@ button {
   box-shadow: 0 0 0 3px var(--color-primary-soft);
 }
 
+.search-box .search-icon {
+  color: var(--color-text-muted);
+  margin-right: var(--spacing-2);
+}
+
 .search-box input {
   border: none;
   background: none;
