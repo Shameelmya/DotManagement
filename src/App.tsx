@@ -43,6 +43,14 @@ const App = () => {
     </div>;
   }
 
+  // Ensure fresh app opens go to dashboard
+  if (!sessionStorage.getItem('appStarted')) {
+    sessionStorage.setItem('appStarted', 'true');
+    if (window.location.pathname !== '/dashboard' && window.location.pathname !== '/login') {
+      window.location.replace('/dashboard');
+    }
+  }
+
   return (
     <BrowserRouter>
       <Routes>
