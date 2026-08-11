@@ -16,6 +16,9 @@ import More from './pages/More';
 import Settings from './pages/Settings';
 import AuditLogs from './pages/AuditLogs';
 import BackupRestore from './pages/BackupRestore';
+import ProjectDetail from './pages/ProjectDetail';
+import BatchDetail from './pages/BatchDetail';
+import Reports from './pages/Reports';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useAuthStore((state) => state.user);
@@ -64,15 +67,17 @@ const App = () => {
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/work/projects" element={<Projects />} />
+          <Route path="/work/projects/:id" element={<ProjectDetail />} />
           <Route path="/work/tasks" element={<Tasks />} />
           <Route path="/team" element={<Staff />} />
           <Route path="/finance" element={<Finance />} />
           <Route path="/courses" element={<Courses />} />
+          <Route path="/courses/batches/:id" element={<BatchDetail />} />
           <Route path="/more" element={<More />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/audit" element={<AuditLogs />} />
           <Route path="/backup" element={<BackupRestore />} />
-          {/* Add more routes later */}
+          <Route path="/reports" element={<Reports />} />
         </Route>
       </Routes>
     </BrowserRouter>

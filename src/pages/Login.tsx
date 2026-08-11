@@ -27,54 +27,46 @@ const Login = () => {
     setError('');
     
     try {
-      // 1. Check if they are a staff member trying to log in with custom password
-      if (username !== 'admin') {
-        const staffRef = collection(db, 'staff');
-        const q = query(staffRef, where('email', '==', username), where('password', '==', password));
-        const querySnapshot = await getDocs(q);
-        
-        if (!querySnapshot.empty) {
-          const staffDoc = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
-          
-          // Log them into Firebase Auth using the shared system auth token
-          // so that firestore security rules pass
-          const auth = getAuth(app);
-          try {
-            await signInWithEmailAndPassword(auth, 'admin@dotprojects.com', 'admin@123');
-          } catch (e) {
-             // Fallback create it if it doesn't exist
-             await createUserWithEmailAndPassword(auth, 'admin@dotprojects.com', 'admin@123');
-          }
-          
-          // Set their actual staff profile into the Zustand store
-          setUser(auth.currentUser, staffDoc);
-          navigate('/dashboard');
-          return;
-        }
-      }
-
-      // 2. Standard Auth Login Fallback (for admin / dev)
-      const targetEmail = username === 'admin' ? 'admin@dotprojects.com' : username;
       const auth = getAuth(app);
       
-      try {
-        await signInWithEmailAndPassword(auth, targetEmail, password);
-        setUser(auth.currentUser, { role: 'SUPER_ADMIN', name: 'Administrator', email: targetEmail });
-        navigate('/dashboard');
-      } catch (err: any) {
-        if (username === 'admin' && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-login-credentials')) {
-          await createUserWithEmailAndPassword(auth, 'admin@dotprojects.com', 'admin@123');
-          await signInWithEmailAndPassword(auth, 'admin@dotprojects.com', password);
-          setUser(auth.currentUser, { role: 'SUPER_ADMIN', name: 'Administrator', email: targetEmail });
-          navigate('/dashboard');
+      // Strict authentication using their actual email and password
+      const userCredential = await signInWithEmailAndPassword(auth, username, password);
+      const firebaseUser = userCredential.user;
+      
+      // Query the staff collection to get their profile
+      const staffRef = collection(db, 'staff');
+      const q = query(staffRef, where('email', '==', username));
+      const querySnapshot = await getDocs(q);
+      
+      let profile = null;
+      if (!querySnapshot.empty) {
+        profile = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+      } else {
+        // Fallback for root admin if no profile exists
+        if (username === 'admin@dotprojects.com' || username === 'admin') {
+          profile = { id: firebaseUser.uid, role: 'SUPER_ADMIN', name: 'Administrator', email: username, status: 'ACTIVE' };
         } else {
-          throw err;
+          throw new Error('User profile not found in database.');
         }
       }
+      
+      // Check if user is active
+      if (profile.status !== 'ACTIVE') {
+        const { signOut } = await import('firebase/auth');
+        await signOut(auth);
+        throw new Error('Your account is not active. Please contact administration.');
+      }
+      
+      setUser(firebaseUser, profile as any);
+      navigate('/dashboard');
       
     } catch (err: any) {
       console.error(err);
-      setError('Invalid username or password. Please try again.');
+      if (err.message && err.message.includes('not active')) {
+         setError(err.message);
+      } else {
+         setError('Invalid username or password. Please try again.');
+      }
     } finally {
       setLoading(false);
     }

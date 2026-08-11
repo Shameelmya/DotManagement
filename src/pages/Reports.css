@@ -1,0 +1,38 @@
+.reports-page {
+  padding-bottom: 80px;
+}
+
+.reports-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--spacing-4);
+  margin-top: var(--spacing-4);
+}
+
+.report-card {
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-3);
+  margin-bottom: var(--spacing-3);
+}
+
+.report-header h3 {
+  margin: 0;
+  color: var(--color-text-main);
+  font-size: 1.1rem;
+}
+
+.report-card p {
+  margin-bottom: var(--spacing-4);
+  flex-grow: 1;
+}
+
+.report-card .btn-secondary {
+  align-self: flex-start;
+}

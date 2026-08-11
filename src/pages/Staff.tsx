@@ -4,6 +4,8 @@ import { dbService, Collections } from '../services/db';
 import { Modal } from '../components/ui/Modal';
 import { ActionMenu } from '../components/ui/ActionMenu';
 import { ConfirmDeleteModal } from '../components/ui/ConfirmDeleteModal';
+import { createUserWithEmailAndPassword, signOut } from 'firebase/auth';
+import { secondaryAuth } from '../services/firebase';
 import './Staff.css';
 
 const Staff = () => {
@@ -57,14 +59,30 @@ const Staff = () => {
   const handleSaveForm = async () => {
     if (!formData.name.trim() || !formData.email.trim()) return;
     try {
+      const { password, ...dataToSave } = formData;
+      
       if (editingId) {
-        await dbService.update(Collections.STAFF, editingId, formData);
+        await dbService.update(Collections.STAFF, editingId, dataToSave);
       } else {
-        await dbService.create(Collections.STAFF, formData);
+        if (!password) {
+           alert("Password is required for new staff.");
+           return;
+        }
+        
+        // Create actual Firebase Auth user
+        const userCredential = await createUserWithEmailAndPassword(secondaryAuth, formData.email, password);
+        const newUid = userCredential.user.uid;
+        
+        // Immediately sign out from secondary app so it doesn't affect main auth state
+        await signOut(secondaryAuth);
+        
+        // Save user data to Firestore with the new uid
+        await dbService.set(Collections.STAFF, newUid, dataToSave);
       }
       setIsFormOpen(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to save staff member", err);
+      alert(err.message || "Failed to save staff member");
     }
   };
 
@@ -180,8 +198,8 @@ const Staff = () => {
           <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
         </div>
         <div className="modal-form-group">
-          <label>Login Password</label>
-          <input type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+          <label>Login Password {editingId && <span className="text-muted">(Leave blank to keep unchanged)</span>}</label>
+          <input type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder={editingId ? "********" : ""} />
         </div>
         <div className="modal-form-group">
           <label>Phone Number</label>

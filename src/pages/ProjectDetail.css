@@ -1,0 +1,91 @@
+.project-detail-page {
+  padding-bottom: 80px; /* Space for mobile nav */
+}
+
+.detail-tabs {
+  display: flex;
+  overflow-x: auto;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2);
+  margin-bottom: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.detail-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-2);
+  padding: var(--spacing-2) var(--spacing-4);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tab-btn:hover {
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+}
+
+.tab-btn.active {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.detail-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-4);
+}
+
+.detail-card {
+  padding: var(--spacing-4);
+}
+
+.detail-card h3 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-4);
+  color: var(--color-text-main);
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: var(--spacing-4);
+}
+
+.info-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-1);
+}
+
+.info-item .label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.info-item .value {
+  font-weight: 600;
+  color: var(--color-text-main);
+}
+
+.mt-4 {
+  margin-top: var(--spacing-4);
+}
+
+.mt-4 h4 {
+  margin-top: 0;
+  margin-bottom: var(--spacing-2);
+  font-size: 0.95rem;
+}
