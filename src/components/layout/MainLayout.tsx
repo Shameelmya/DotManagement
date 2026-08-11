@@ -1,11 +1,33 @@
 import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
+import { Outlet, NavLink, useNavigate, useLocation } from 'react-router-dom';
 import './MainLayout.css';
 import { Home, Briefcase, IndianRupee, Users, Menu, CheckSquare, BookOpen, LogOut, Settings, ShieldAlert, DatabaseBackup } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const MainLayout = () => {
   const logout = useAuthStore(state => state.logout);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleNavClick = (path: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    if (location.pathname === path) return;
+    
+    const rootPaths = ['/dashboard', '/work/projects', '/finance', '/team', '/more'];
+    const isCurrentlyOnRoot = rootPaths.includes(location.pathname);
+    
+    if (path === '/dashboard') {
+      navigate(path, { replace: true });
+    } else {
+      if (location.pathname === '/dashboard') {
+        navigate(path);
+      } else if (isCurrentlyOnRoot) {
+        navigate(path, { replace: true });
+      } else {
+        navigate(path);
+      }
+    }
+  };
 
   return (
     <div className="main-layout">
@@ -20,8 +42,6 @@ const MainLayout = () => {
             <LogOut size={20} className="text-error" />
           </button>
         </div>
-      </header>
-
       {/* Desktop Sidebar (hidden on mobile) */}
       <aside className="desktop-sidebar">
         <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
@@ -66,23 +86,23 @@ const MainLayout = () => {
 
       {/* Mobile Bottom Navigation */}
       <nav className="mobile-bottom-nav">
-        <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+        <NavLink to="/dashboard" onClick={(e) => handleNavClick('/dashboard', e)} className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Home className="icon" /></div>
           <span>Home</span>
         </NavLink>
-        <NavLink to="/work/projects" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+        <NavLink to="/work/projects" onClick={(e) => handleNavClick('/work/projects', e)} className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Briefcase className="icon" /></div>
           <span>Work</span>
         </NavLink>
-        <NavLink to="/finance" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+        <NavLink to="/finance" onClick={(e) => handleNavClick('/finance', e)} className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><IndianRupee className="icon" /></div>
           <span>Finance</span>
         </NavLink>
-        <NavLink to="/team" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+        <NavLink to="/team" onClick={(e) => handleNavClick('/team', e)} className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Users className="icon" /></div>
           <span>Team</span>
         </NavLink>
-        <NavLink to="/more" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+        <NavLink to="/more" onClick={(e) => handleNavClick('/more', e)} className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Menu className="icon" /></div>
           <span>More</span>
         </NavLink>
