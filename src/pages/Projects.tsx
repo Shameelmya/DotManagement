@@ -1,25 +1,47 @@
-import React, { useState } from 'react';
-import { Plus, Search, Filter, MoreVertical, Briefcase } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Plus, Search, Filter, MoreVertical, Building2, FolderKanban } from 'lucide-react';
+import { dbService, Collections } from '../services/db';
 import './Projects.css';
-
-const DUMMY_PROJECTS = [
-  { id: 'PRJ-101', name: 'Techcon Branding', client: 'Techcon Corp', status: 'RUNNING', deadline: '2026-09-15', value: '₹1,50,000', outstanding: '₹50,000' },
-  { id: 'PRJ-102', name: 'Web Design Pro', client: 'Web Solutions', status: 'COMPLETED', deadline: '2026-08-01', value: '₹80,000', outstanding: '₹0' },
-  { id: 'PRJ-103', name: 'Social Media Q3', client: 'Local Cafe', status: 'RUNNING', deadline: '2026-10-01', value: '₹45,000', outstanding: '₹20,000' },
-  { id: 'PRJ-104', name: 'Annual Report', client: 'Finance Inc', status: 'PLANNED', deadline: '2026-11-20', value: '₹95,000', outstanding: '₹95,000' },
-];
 
 const Projects = () => {
   const [searchTerm, setSearchTerm] = useState('');
+  const [projects, setProjects] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const unsubscribe = dbService.subscribe(Collections.PROJECTS, (data) => {
+      setProjects(data);
+      setLoading(false);
+    });
+    return () => unsubscribe();
+  }, []);
+
+  const filteredProjects = projects.filter(p => 
+    p.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+    p.client?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="projects-container">
       <div className="page-header">
         <div>
           <h1>Projects</h1>
-          <p>Manage all client projects and retainers.</p>
+          <p>Manage active and completed projects.</p>
         </div>
-        <button className="btn-primary">
+        <button className="btn-primary" onClick={() => {
+            // Placeholder: open create project modal
+            const name = prompt("Enter project name:");
+            if (name) {
+                dbService.create(Collections.PROJECTS, {
+                    name,
+                    client: 'New Client',
+                    status: 'PENDING',
+                    value: 0,
+                    received: 0,
+                    deadline: 'TBD'
+                });
+            }
+        }}>
           <Plus size={20} />
           <span>New Project</span>
         </button>
@@ -30,104 +52,120 @@ const Projects = () => {
           <Search size={18} className="search-icon" />
           <input 
             type="text" 
-            placeholder="Search projects by name or client..." 
+            placeholder="Search projects or clients..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
         <button className="btn-secondary">
           <Filter size={18} />
-          <span>Filter</span>
+          <span>Status</span>
         </button>
       </div>
 
-      {/* Desktop Table View */}
-      <div className="projects-table-container">
-        <table className="projects-table">
-          <thead>
-            <tr>
-              <th>Project Name</th>
-              <th>Client</th>
-              <th>Status</th>
-              <th>Deadline</th>
-              <th>Value</th>
-              <th>Outstanding</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {DUMMY_PROJECTS.map((prj) => (
-              <tr key={prj.id}>
-                <td>
-                  <div className="prj-name-cell">
-                    <Briefcase size={16} className="text-muted" />
-                    <div>
-                      <strong>{prj.name}</strong>
-                      <span className="prj-id">{prj.id}</span>
+      {loading ? (
+        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--color-text-muted)' }}>
+           Loading projects...
+        </div>
+      ) : filteredProjects.length === 0 ? (
+        <div style={{ padding: '60px 20px', textAlign: 'center', backgroundColor: 'var(--color-surface)', borderRadius: 'var(--radius-lg)' }}>
+           <FolderKanban size={48} style={{ color: 'var(--color-border)', marginBottom: '16px' }} />
+           <h3>No projects found</h3>
+           <p style={{ color: 'var(--color-text-muted)', marginBottom: '24px' }}>Create your first project to get started.</p>
+        </div>
+      ) : (
+        <>
+          {/* Desktop Table View (hidden on mobile) */}
+          <div className="projects-table-container">
+            <table className="projects-table">
+              <thead>
+                <tr>
+                  <th>Project Name</th>
+                  <th>Client</th>
+                  <th>Status</th>
+                  <th>Value</th>
+                  <th>Outstanding</th>
+                  <th>Deadline</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredProjects.map((project) => {
+                  const val = project.value || 0;
+                  const rec = project.received || 0;
+                  const outstanding = val - rec;
+                  return (
+                    <tr key={project.id}>
+                      <td className="fw-600">{project.name}</td>
+                      <td>
+                        <div className="client-cell">
+                          <Building2 size={14} className="text-muted"/>
+                          {project.client}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={`status-badge status-${project.status?.toLowerCase()}`}>
+                          {project.status?.replace('_', ' ')}
+                        </span>
+                      </td>
+                      <td>₹{val.toLocaleString()}</td>
+                      <td className={outstanding > 0 ? 'text-warning fw-600' : 'text-success fw-600'}>
+                        ₹{outstanding.toLocaleString()}
+                      </td>
+                      <td>{project.deadline}</td>
+                      <td>
+                        <button className="btn-icon"><MoreVertical size={16}/></button>
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Mobile Card View (hidden on desktop) */}
+          <div className="projects-cards-container">
+            {filteredProjects.map((project) => {
+              const val = project.value || 0;
+              const rec = project.received || 0;
+              const outstanding = val - rec;
+              return (
+                <div className="project-card" key={project.id}>
+                  <div className="project-card-header">
+                    <h3 className="project-title">{project.name}</h3>
+                    <button className="btn-icon"><MoreVertical size={16}/></button>
+                  </div>
+                  
+                  <div className="project-client">
+                    <Building2 size={14} className="text-muted"/>
+                    <span>{project.client}</span>
+                  </div>
+                  
+                  <div className="project-financials">
+                    <div className="fin-item">
+                      <span className="fin-label">Value</span>
+                      <span className="fin-value">₹{val.toLocaleString()}</span>
+                    </div>
+                    <div className="fin-item">
+                      <span className="fin-label">Outstanding</span>
+                      <span className={`fin-value ${outstanding > 0 ? 'text-warning' : 'text-success'}`}>
+                        ₹{outstanding.toLocaleString()}
+                      </span>
                     </div>
                   </div>
-                </td>
-                <td>{prj.client}</td>
-                <td>
-                  <span className={`status-badge status-${prj.status.toLowerCase()}`}>
-                    {prj.status}
-                  </span>
-                </td>
-                <td>{prj.deadline}</td>
-                <td>{prj.value}</td>
-                <td className={prj.outstanding !== '₹0' ? 'text-amber' : 'text-success'}>
-                  {prj.outstanding}
-                </td>
-                <td>
-                  <button className="btn-icon"><MoreVertical size={18}/></button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Mobile Card View */}
-      <div className="projects-mobile-list">
-        {DUMMY_PROJECTS.map((prj) => (
-          <div className="project-card" key={prj.id}>
-            <div className="project-card-header">
-              <div className="prj-name-cell">
-                <Briefcase size={18} className="text-primary" />
-                <div>
-                  <strong>{prj.name}</strong>
-                  <span className="prj-id">{prj.id}</span>
+                  
+                  <div className="project-card-footer">
+                    <span className={`status-badge status-${project.status?.toLowerCase()}`}>
+                      {project.status?.replace('_', ' ')}
+                    </span>
+                    <span className="project-deadline">Due: {project.deadline}</span>
+                  </div>
                 </div>
-              </div>
-              <button className="btn-icon"><MoreVertical size={18}/></button>
-            </div>
-            
-            <div className="project-card-body">
-              <div className="detail-row">
-                <span className="label">Client</span>
-                <span className="value">{prj.client}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Deadline</span>
-                <span className="value">{prj.deadline}</span>
-              </div>
-              <div className="detail-row">
-                <span className="label">Outstanding</span>
-                <span className={`value ${prj.outstanding !== '₹0' ? 'text-amber' : 'text-success'}`}>
-                  {prj.outstanding}
-                </span>
-              </div>
-            </div>
-            
-            <div className="project-card-footer">
-              <span className={`status-badge status-${prj.status.toLowerCase()}`}>
-                {prj.status}
-              </span>
-              <button className="btn-text">View Details</button>
-            </div>
+              )
+            })}
           </div>
-        ))}
-      </div>
+        </>
+      )}
     </div>
   );
 };

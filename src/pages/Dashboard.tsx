@@ -1,10 +1,64 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
 import { Briefcase, CheckSquare, DollarSign, Activity, AlertCircle } from 'lucide-react';
+import { dbService, Collections } from '../services/db';
 import './Dashboard.css';
 
 const Dashboard = () => {
   const user = useAuthStore(state => state.user);
+  const [stats, setStats] = useState({
+    projects: 0,
+    tasks: 0,
+    completedTasks: 0,
+    netPosition: 0,
+    receivables: 0,
+    workload: [] as any[]
+  });
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    // We are simulating aggregation by fetching all docs.
+    // In a production environment with millions of rows, use Firestore Aggregation Queries.
+    const loadData = async () => {
+      try {
+        const [projects, tasks, finance, staff] = await Promise.all([
+          dbService.getAll(Collections.PROJECTS) as Promise<any[]>,
+          dbService.getAll(Collections.TASKS) as Promise<any[]>,
+          dbService.getAll(Collections.FINANCE) as Promise<any[]>,
+          dbService.getAll(Collections.STAFF) as Promise<any[]>
+        ]);
+
+        const totalIncome = finance.filter(t => t.type === 'in').reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+        const totalExpense = finance.filter(t => t.type === 'out').reduce((sum, t) => sum + (Number(t.amount) || 0), 0);
+        
+        // Calculate receivables from projects
+        const receivables = projects.reduce((sum, p) => sum + (Math.max(0, (Number(p.value) || 0) - (Number(p.received) || 0))), 0);
+
+        // Workload mapping
+        const workloadMap: Record<string, number> = {};
+        tasks.forEach(t => {
+            if (t.assignee && t.assignee !== 'Unassigned' && t.status !== 'COMPLETED') {
+                workloadMap[t.assignee] = (workloadMap[t.assignee] || 0) + 1;
+            }
+        });
+        const workload = Object.keys(workloadMap).map(name => ({ name, count: workloadMap[name] })).sort((a,b) => b.count - a.count);
+
+        setStats({
+          projects: projects.filter(p => p.status !== 'COMPLETED').length,
+          tasks: tasks.length,
+          completedTasks: tasks.filter(t => t.status === 'COMPLETED').length,
+          netPosition: totalIncome - totalExpense,
+          receivables,
+          workload
+        });
+      } catch (err) {
+        console.error("Failed to load dashboard stats", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, []);
 
   return (
     <div className="dashboard-container">
@@ -13,126 +67,87 @@ const Dashboard = () => {
         <p className="dashboard-subtitle">Here is what's happening today.</p>
       </header>
 
-      {/* Priority Action Area for Mobile */}
-      <section className="priority-section">
-        <h3>Today's Priority</h3>
-        <div className="priority-cards">
-          <div className="priority-card pending">
-            <span className="count">4</span>
-            <span className="label">Tasks</span>
-          </div>
-          <div className="priority-card running">
-            <span className="count">2</span>
-            <span className="label">Running</span>
-          </div>
-          <div className="priority-card review">
-            <span className="count">1</span>
-            <span className="label">Review</span>
-          </div>
-          <div className="priority-card overdue">
-            <span className="count">1</span>
-            <span className="label">Overdue</span>
-          </div>
-        </div>
-      </section>
-
       {/* KPI Overview */}
       <section className="kpi-grid">
-        <div className="kpi-card">
+        <div className="kpi-card glass-panel">
           <div className="kpi-icon-wrapper blue">
             <Briefcase className="icon" />
           </div>
           <div className="kpi-info">
             <span className="kpi-label">Active Projects</span>
-            <span className="kpi-value">12</span>
+            <span className="kpi-value">{loading ? '...' : stats.projects}</span>
           </div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card glass-panel">
           <div className="kpi-icon-wrapper green">
             <CheckSquare className="icon" />
           </div>
           <div className="kpi-info">
             <span className="kpi-label">Completed Tasks</span>
-            <span className="kpi-value">48</span>
+            <span className="kpi-value">{loading ? '...' : stats.completedTasks}</span>
           </div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card glass-panel">
           <div className="kpi-icon-wrapper amber">
             <DollarSign className="icon" />
           </div>
           <div className="kpi-info">
             <span className="kpi-label">Receivables</span>
-            <span className="kpi-value">₹45,000</span>
+            <span className="kpi-value">{loading ? '...' : `₹${stats.receivables.toLocaleString()}`}</span>
           </div>
         </div>
-        <div className="kpi-card">
+        <div className="kpi-card glass-panel">
           <div className="kpi-icon-wrapper pink">
             <Activity className="icon" />
           </div>
           <div className="kpi-info">
             <span className="kpi-label">Net Position</span>
-            <span className="kpi-value">₹1,20,500</span>
+            <span className="kpi-value">{loading ? '...' : `₹${stats.netPosition.toLocaleString()}`}</span>
           </div>
         </div>
       </section>
 
       {/* Main Content Grid */}
       <div className="dashboard-main-grid">
-        <section className="dashboard-panel">
+        <section className="dashboard-panel glass-panel">
           <div className="panel-header">
             <h3>Recent Updates</h3>
-            <button className="btn-text">View All</button>
+            <button className="btn-text" style={{ color: 'var(--color-primary)'}}>View All</button>
           </div>
           <div className="panel-content">
             <div className="activity-item">
               <div className="activity-icon blue"><CheckSquare size={16}/></div>
               <div className="activity-details">
-                <p><strong>Techcon Poster</strong> marked as Review</p>
-                <span>10 mins ago</span>
-              </div>
-            </div>
-            <div className="activity-item">
-              <div className="activity-icon green"><DollarSign size={16}/></div>
-              <div className="activity-details">
-                <p>Payment received for <strong>Web Design Pro</strong></p>
-                <span>2 hours ago</span>
-              </div>
-            </div>
-            <div className="activity-item">
-              <div className="activity-icon amber"><AlertCircle size={16}/></div>
-              <div className="activity-details">
-                <p><strong>Brand Guide</strong> task is overdue</p>
-                <span>5 hours ago</span>
+                <p>Welcome to the new system!</p>
+                <span>Just now</span>
               </div>
             </div>
           </div>
         </section>
 
-        <section className="dashboard-panel">
+        <section className="dashboard-panel glass-panel">
           <div className="panel-header">
             <h3>Team Workload</h3>
           </div>
           <div className="panel-content workload-list">
-            <div className="workload-item">
-              <div className="user-info">
-                <div className="avatar">JD</div>
-                <span>John Doe</span>
-              </div>
-              <div className="workload-bar-container">
-                <div className="workload-bar" style={{ width: '80%' }}></div>
-              </div>
-              <span className="workload-count">8 tasks</span>
-            </div>
-            <div className="workload-item">
-              <div className="user-info">
-                <div className="avatar">SA</div>
-                <span>Sarah Admin</span>
-              </div>
-              <div className="workload-bar-container">
-                <div className="workload-bar" style={{ width: '40%' }}></div>
-              </div>
-              <span className="workload-count">4 tasks</span>
-            </div>
+            {loading ? (
+                <div style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: '20px' }}>Loading...</div>
+            ) : stats.workload.length === 0 ? (
+                <div style={{ color: 'var(--color-text-muted)', textAlign: 'center', padding: '20px' }}>No active workloads.</div>
+            ) : (
+                stats.workload.map(wl => (
+                    <div className="workload-item" key={wl.name}>
+                      <div className="user-info">
+                        <div className="avatar">{wl.name.substring(0, 2).toUpperCase()}</div>
+                        <span>{wl.name}</span>
+                      </div>
+                      <div className="workload-bar-container">
+                        <div className="workload-bar" style={{ width: `${Math.min(100, wl.count * 10)}%` }}></div>
+                      </div>
+                      <span className="workload-count">{wl.count} tasks</span>
+                    </div>
+                ))
+            )}
           </div>
         </section>
       </div>

@@ -12,6 +12,8 @@
   justify-content: space-between;
   height: 60px;
   background-color: var(--color-surface);
+  backdrop-filter: var(--blur-md);
+  -webkit-backdrop-filter: var(--blur-md);
   border-bottom: 1px solid var(--color-border);
   padding: 0 var(--spacing-4);
   position: sticky;
@@ -36,7 +38,7 @@
 .desktop-sidebar {
   display: none;
   width: 260px;
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-solid); /* Solid in desktop for better readability */
   border-right: 1px solid var(--color-border);
   flex-direction: column;
   position: fixed;
@@ -83,7 +85,9 @@
 .sidebar-nav .nav-item.active {
   color: var(--color-primary);
   background-color: var(--color-primary-soft);
-  border-right: 3px solid var(--color-primary);
+  border-radius: var(--radius-md);
+  margin: 0 var(--spacing-3);
+  padding: var(--spacing-3) calc(var(--spacing-6) - var(--spacing-3));
 }
 
 .sidebar-nav .icon {
@@ -109,14 +113,16 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 60px;
+  height: 65px;
   background-color: var(--color-surface);
-  border-top: 1px solid var(--color-border);
+  backdrop-filter: var(--blur-lg);
+  -webkit-backdrop-filter: var(--blur-lg);
+  border-top: 1px solid var(--color-border-light);
   position: fixed;
   bottom: 0;
   left: 0;
   right: 0;
-  z-index: 10;
+  z-index: 50;
   padding-bottom: env(safe-area-inset-bottom);
 }
 
@@ -136,12 +142,18 @@
 }
 
 .mobile-bottom-nav .icon {
-  width: 22px;
-  height: 22px;
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+  transition: transform var(--transition-fast);
 }
 
 .mobile-bottom-nav .nav-item.active {
   color: var(--color-primary);
+}
+
+.mobile-bottom-nav .nav-item.active .icon {
+  transform: scale(1.1);
 }
 
 /* --- Responsive Breakpoints --- */

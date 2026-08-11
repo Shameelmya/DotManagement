@@ -3,12 +3,12 @@ import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "dummy-api-key",
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "dummy-auth-domain",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "dummy-project-id",
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "dummy-storage-bucket",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "dummy-sender-id",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "dummy-app-id"
+  apiKey: "AIzaSyBrwC6txr6tsH57Q8jtuA5eIaj6XC9ujmA",
+  authDomain: "dot-work-management.firebaseapp.com",
+  projectId: "dot-work-management",
+  storageBucket: "dot-work-management.firebasestorage.app",
+  messagingSenderId: "1060013471169",
+  appId: "1:1060013471169:web:02dafc0f953906276d2b40"
 };
 
 // Initialize Firebase

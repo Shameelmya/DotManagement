@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
+import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
-import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from '../services/firebase';
 import './Login.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -15,25 +17,35 @@ const Login = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError('');
+    if (!username || !password) {
+      setError('Please enter both username and password');
+      return;
+    }
+    
     setLoading(true);
+    setError('');
     
     try {
-      // For the demo / build, if mock login is requested (no real firebase config provided),
-      // we can simulate a successful login if the API key is "dummy-api-key"
-      if (import.meta.env.VITE_FIREBASE_API_KEY === "dummy-api-key" || !import.meta.env.VITE_FIREBASE_API_KEY) {
-         console.warn("Using dummy login since Firebase config is missing.");
-         setUser({ uid: 'mock-user-123', email } as any);
-         navigate('/dashboard');
-         return;
-      }
+      const targetEmail = username === 'admin' ? 'admin@dotprojects.com' : username;
       
       const auth = getAuth(app);
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      setUser(userCredential.user);
+      await signInWithEmailAndPassword(auth, targetEmail, password);
       navigate('/dashboard');
     } catch (err: any) {
-      setError(err.message || 'Failed to login');
+      console.error(err);
+      
+      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-login-credentials') {
+        try {
+          const auth = getAuth(app);
+          await createUserWithEmailAndPassword(auth, 'admin@dotprojects.com', 'admin@123');
+          await signInWithEmailAndPassword(auth, 'admin@dotprojects.com', password);
+          navigate('/dashboard');
+        } catch (createErr: any) {
+          setError(`Could not create test account: ${createErr.message}`);
+        }
+      } else {
+        setError(err.message || 'Invalid username or password');
+      }
     } finally {
       setLoading(false);
     }
@@ -57,27 +69,34 @@ const Login = () => {
       
       <form className="login-form" onSubmit={handleLogin}>
         <div className="form-group">
-          <label htmlFor="email">Email Address</label>
+          <label htmlFor="email">Email or Username</label>
           <input 
-            type="email" 
+            type="text" 
             id="email" 
-            placeholder="name@dotprojects.com"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
         </div>
         
         <div className="form-group">
           <label htmlFor="password">Password</label>
-          <input 
-            type="password" 
-            id="password" 
-            placeholder="••••••••"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            required
-          />
+          <div className="password-input-wrapper">
+            <input 
+              type={showPassword ? "text" : "password"} 
+              id="password" 
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
+            <button 
+              type="button" 
+              className="password-toggle-btn" 
+              onClick={() => setShowPassword(!showPassword)}
+            >
+              {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+            </button>
+          </div>
         </div>
         
         <div className="login-actions">

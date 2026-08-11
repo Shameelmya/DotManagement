@@ -9,7 +9,7 @@ const MainLayout = () => {
       {/* Mobile Header */}
       <header className="mobile-header">
         <div className="logo-container">
-          <img src="/logo.png" alt="Dot Projects" style={{ height: '32px', width: 'auto' }} onError={(e) => e.currentTarget.style.display='none'}/>
+          <img src="/logo.png" alt="Dot Projects" style={{ height: '32px', width: '32px', objectFit: 'cover', borderRadius: '50%' }} onError={(e) => e.currentTarget.style.display='none'}/>
         </div>
         <div className="header-actions">
           <Menu className="icon" />
@@ -19,7 +19,7 @@ const MainLayout = () => {
       {/* Desktop Sidebar (hidden on mobile) */}
       <aside className="desktop-sidebar">
         <div className="sidebar-logo">
-          <img src="/logo.png" alt="Dot Projects" style={{ height: '40px', width: 'auto' }} onError={(e) => e.currentTarget.style.display='none'}/>
+          <img src="/logo.png" alt="Dot Projects" style={{ height: '40px', width: '40px', objectFit: 'cover', borderRadius: '50%' }} onError={(e) => e.currentTarget.style.display='none'}/>
         </div>
         <nav className="sidebar-nav">
           <div className="nav-section-title">MAIN</div>

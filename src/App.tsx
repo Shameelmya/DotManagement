@@ -26,14 +26,10 @@ const App = () => {
   const { setUser, setLoading, loading } = useAuthStore();
 
   useEffect(() => {
-    // If we are using dummy config, bypass Firebase auth listener setup
-    if (import.meta.env.VITE_FIREBASE_API_KEY === "dummy-api-key" || !import.meta.env.VITE_FIREBASE_API_KEY) {
-      setLoading(false);
-      return;
-    }
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setUser(user);
+      setLoading(false);
     });
     return () => unsubscribe();
   }, [setUser, setLoading]);
