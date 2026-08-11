@@ -1,0 +1,155 @@
+.finance-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-6);
+}
+
+.header-actions-group {
+  display: flex;
+  gap: var(--spacing-3);
+}
+
+/* Finance Overview Cards */
+.finance-overview {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-4);
+}
+
+.finance-card {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-4);
+  padding: var(--spacing-4);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
+}
+
+.finance-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: var(--radius-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.finance-card.income .finance-icon-box { background-color: var(--color-success-bg); color: var(--color-success); }
+.finance-card.expense .finance-icon-box { background-color: var(--color-error-bg); color: var(--color-error); }
+.finance-card.net .finance-icon-box { background-color: var(--color-primary-soft); color: var(--color-primary); }
+.finance-card.receivables .finance-icon-box { background-color: var(--color-warning-bg); color: var(--color-warning); }
+
+.finance-data {
+  display: flex;
+  flex-direction: column;
+}
+
+.finance-data .label {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+}
+
+.finance-data .value {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text-main);
+}
+
+/* Transactions List */
+.transactions-list {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-4);
+  display: flex;
+  flex-direction: column;
+}
+
+.transactions-list h3 {
+  font-size: 1.1rem;
+  margin-bottom: var(--spacing-4);
+  padding-bottom: var(--spacing-2);
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.transaction-item {
+  display: flex;
+  align-items: center;
+  padding: var(--spacing-3) 0;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.transaction-item:last-child {
+  border-bottom: none;
+}
+
+.txn-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-full);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--spacing-3);
+  flex-shrink: 0;
+}
+
+.txn-icon.in { background-color: var(--color-success-bg); color: var(--color-success); }
+.txn-icon.out { background-color: var(--color-error-bg); color: var(--color-error); }
+
+.txn-details {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.txn-desc {
+  font-weight: 600;
+  color: var(--color-text-main);
+  font-size: 0.95rem;
+}
+
+.txn-meta {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+}
+
+.txn-amount {
+  font-weight: 700;
+  font-size: 1.05rem;
+  margin-left: var(--spacing-3);
+}
+
+/* Text Colors */
+.text-error { color: var(--color-error); }
+
+/* Responsive Overrides */
+@media (max-width: 639px) {
+  .page-header {
+    flex-direction: column;
+    gap: var(--spacing-3);
+  }
+  
+  .header-actions-group {
+    width: 100%;
+  }
+  
+  .header-actions-group button {
+    flex: 1;
+    justify-content: center;
+  }
+}
+
+@media (min-width: 768px) {
+  .finance-overview {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .finance-overview {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}

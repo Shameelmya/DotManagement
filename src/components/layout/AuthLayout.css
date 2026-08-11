@@ -1,0 +1,27 @@
+.auth-layout {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-background);
+  /* Optional subtle background gradient using brand colors */
+  background-image: radial-gradient(circle at top right, var(--color-rose-light), var(--color-background) 40%);
+}
+
+.auth-content {
+  width: 100%;
+  max-width: 420px;
+  padding: var(--spacing-6);
+  background: var(--color-surface);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+  margin: var(--spacing-4);
+}
+
+@media (max-width: 480px) {
+  .auth-content {
+    box-shadow: none;
+    background: transparent;
+    padding: var(--spacing-4);
+  }
+}
