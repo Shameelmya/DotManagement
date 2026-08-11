@@ -18,7 +18,7 @@
 
   /* Backgrounds & Surfaces (Glassmorphism ready) */
   --color-background: #F2F2F7; /* iOS grouped background */
-  --color-surface: rgba(255, 255, 255, 0.75); /* Translucent surface */
+  --color-surface: #FFFFFF; /* Solid surface (100% opacity) */
   --color-surface-solid: #FFFFFF;
   
   /* Borders */
@@ -67,7 +67,7 @@
 @media (prefers-color-scheme: dark) {
   :root {
     --color-background: #000000;
-    --color-surface: rgba(28, 28, 30, 0.75);
+    --color-surface: #1C1C1E;
     --color-surface-solid: #1C1C1E;
     
     --color-border: rgba(235, 235, 245, 0.15);

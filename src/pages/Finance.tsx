@@ -102,13 +102,13 @@ const Finance = () => {
           <p>Track income, expenses, and overall financial health.</p>
         </div>
         <div className="header-actions-group">
-          <button className="btn-secondary" onClick={() => handleOpenForm('out')}>
-            <TrendingDown size={18} className="text-error" />
-            <span>Add Expense</span>
-          </button>
           <button className="btn-primary" onClick={() => handleOpenForm('in')}>
             <TrendingUp size={18} />
             <span>Add Income</span>
+          </button>
+          <button className="btn-secondary" onClick={() => handleOpenForm('out')}>
+            <TrendingDown size={18} className="text-error" />
+            <span>Add Expense</span>
           </button>
         </div>
       </div>
