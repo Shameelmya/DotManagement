@@ -68,18 +68,23 @@ const MainLayout = () => {
       <nav className="mobile-bottom-nav">
         <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Home className="icon" /></div>
+          <span>Home</span>
         </NavLink>
         <NavLink to="/work/projects" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Briefcase className="icon" /></div>
+          <span>Work</span>
         </NavLink>
         <NavLink to="/finance" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><IndianRupee className="icon" /></div>
+          <span>Finance</span>
         </NavLink>
         <NavLink to="/team" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Users className="icon" /></div>
+          <span>Team</span>
         </NavLink>
         <NavLink to="/more" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Menu className="icon" /></div>
+          <span>More</span>
         </NavLink>
       </nav>
     </div>

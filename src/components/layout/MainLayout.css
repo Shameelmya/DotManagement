@@ -111,9 +111,9 @@
   display: flex;
   justify-content: space-around; /* Evenly space out icons to fill width */
   align-items: center; 
-  height: 64px; /* Reduced height now that text is removed */
+  height: 85px; /* Restored height for text */
   background-color: var(--color-primary); /* Pink background */
-  border-radius: 32px; /* Perfect pill shape */
+  border-radius: 24px; /* Restored border radius */
   position: fixed;
   bottom: 12px;
   left: 16px; /* Match standard page padding */
@@ -129,8 +129,9 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  color: rgba(255, 255, 255, 0.6); /* Translucent white text for inactive */
+  gap: 4px; /* Gap between icon and text */
   width: 58px;
-  height: 100%;
   text-decoration: none;
 }
 
@@ -138,18 +139,24 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 44px; /* Slightly smaller to fit 64px tight dock */
-  height: 44px; /* Slightly smaller */
-  border-radius: 50%; /* Make them perfect circles instead of squircles to match pill */
+  width: 48px; /* Restored size */
+  height: 48px; /* Restored size */
+  border-radius: 16px; /* Restored squircle shape */
   background-color: rgba(255, 255, 255, 0.15); /* Translucent white for inactive */
   transition: all 0.3s ease;
 }
 
 .mobile-bottom-nav .icon {
-  width: 20px;
-  height: 20px;
+  width: 24px; /* Restored icon size */
+  height: 24px; /* Restored icon size */
   transition: all 0.3s ease;
   color: rgba(255, 255, 255, 0.8); /* Almost solid white icon for inactive */
+}
+
+.mobile-bottom-nav .nav-item span {
+  font-size: 0.75rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
 }
 
 /* Active State Design (Non-Center) */
@@ -160,6 +167,10 @@
 
 .mobile-bottom-nav .nav-item.active .icon {
   color: var(--color-primary); /* Pink icon when active */
+}
+
+.mobile-bottom-nav .nav-item.active span {
+  color: #ffffff; /* Solid white text when active */
 }
 
 /* --- Responsive Breakpoints --- */
