@@ -109,19 +109,19 @@
 /* --- Mobile Bottom Nav --- */
 .mobile-bottom-nav {
   display: flex;
-  justify-content: center; /* Center to reduce horizontal gap */
-  gap: var(--spacing-2); /* Reduced gap */
-  align-items: flex-end; /* Move icons slightly down */
-  padding-bottom: calc(env(safe-area-inset-bottom) + 12px); /* Add padding to push them down */
-  height: 90px; /* Increased height */
-  background-color: #FFFFFF; /* 100% opacity */
-  border-top: 1px solid var(--color-border-light);
+  justify-content: space-evenly; /* Spread icons evenly in the pill */
+  align-items: center; 
+  height: 80px;
+  background-color: #FFFFFF;
+  border-radius: 40px; /* Highly curved rectangle / Pill shape */
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  bottom: 12px; /* Close to bottom to save space */
+  left: 16px;
+  right: 16px;
   z-index: 50;
-  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.1); /* Beautiful floating shadow */
+  padding: 0 8px; /* Inner padding */
+  border: 1px solid var(--color-border-light);
 }
 
 .mobile-bottom-nav .nav-item {
@@ -130,8 +130,8 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text-light);
-  gap: 6px;
-  width: 70px; /* Fixed width to control spacing */
+  gap: 4px; /* Tighten gap between icon and text */
+  width: 60px; /* Smaller fixed width */
   text-decoration: none;
 }
 
