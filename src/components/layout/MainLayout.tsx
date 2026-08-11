@@ -19,7 +19,6 @@ const MainLayout = () => {
           <button className="btn-icon" onClick={logout} title="Logout" style={{ marginRight: '8px' }}>
             <LogOut size={20} className="text-error" />
           </button>
-          <Menu className="icon" />
         </div>
       </header>
 

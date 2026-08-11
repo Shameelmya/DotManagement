@@ -173,23 +173,23 @@ const Staff = () => {
       <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Staff Member" : "Add Staff Member"}>
         <div className="modal-form-group">
           <label>Full Name</label>
-          <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Sarah Smith" />
+          <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Email Address / Username</label>
-          <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="e.g. sarah@dotprojects.com" />
+          <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Login Password</label>
-          <input type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="Set a password for this user" />
+          <input type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Phone Number</label>
-          <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="e.g. +91 98765 43210" />
+          <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Designation / Job Title</label>
-          <input type="text" value={formData.designation} onChange={e => setFormData({...formData, designation: e.target.value})} placeholder="e.g. Senior UI Designer" />
+          <input type="text" value={formData.designation} onChange={e => setFormData({...formData, designation: e.target.value})} />
         </div>
         <div style={{ display: 'flex', gap: '16px' }}>
           <div className="modal-form-group" style={{ flex: 1 }}>

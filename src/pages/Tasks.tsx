@@ -182,11 +182,11 @@ const Tasks = () => {
       <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Task" : "New Task"}>
         <div className="modal-form-group">
           <label>Task Title</label>
-          <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Design Homepage" />
+          <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Project</label>
-          <input type="text" value={formData.project} onChange={e => setFormData({...formData, project: e.target.value})} placeholder="e.g. Website Redesign" />
+          <input type="text" value={formData.project} onChange={e => setFormData({...formData, project: e.target.value})} />
         </div>
         <div style={{ display: 'flex', gap: '16px' }}>
           <div className="modal-form-group" style={{ flex: 1 }}>
@@ -225,7 +225,7 @@ const Tasks = () => {
         </div>
         <div className="modal-form-group">
           <label>Assignee</label>
-          <input type="text" value={formData.assignee} onChange={e => setFormData({...formData, assignee: e.target.value})} placeholder="e.g. John Doe" />
+          <input type="text" value={formData.assignee} onChange={e => setFormData({...formData, assignee: e.target.value})} />
         </div>
         <div className="modal-actions">
           <button className="btn-secondary" onClick={() => setIsFormOpen(false)}>Cancel</button>

@@ -236,11 +236,11 @@ const Projects = () => {
       <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Project" : "New Project"}>
         <div className="modal-form-group">
           <label>Project Name</label>
-          <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Website Redesign" />
+          <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Client</label>
-          <input type="text" value={formData.client} onChange={e => setFormData({...formData, client: e.target.value})} placeholder="e.g. Acme Corp" />
+          <input type="text" value={formData.client} onChange={e => setFormData({...formData, client: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Status</label>

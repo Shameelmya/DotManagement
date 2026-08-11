@@ -216,7 +216,7 @@ const Finance = () => {
       <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Transaction" : (formData.type === 'in' ? "Add Income" : "Add Expense")}>
         <div className="modal-form-group">
           <label>Description</label>
-          <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} placeholder="e.g. Website Payment" />
+          <input type="text" value={formData.description} onChange={e => setFormData({...formData, description: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Amount (₹)</label>
@@ -224,7 +224,7 @@ const Finance = () => {
         </div>
         <div className="modal-form-group">
           <label>Category</label>
-          <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} placeholder="e.g. Design Services" />
+          <input type="text" value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})} />
         </div>
         <div className="modal-form-group">
           <label>Payment Method</label>
