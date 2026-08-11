@@ -67,6 +67,10 @@ const MainLayout = () => {
 
       {/* Mobile Bottom Navigation */}
       <nav className="mobile-bottom-nav">
+        <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
+          <div className="icon-wrapper"><Home className="icon" /></div>
+          <span>Home</span>
+        </NavLink>
         <NavLink to="/work/projects" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Briefcase className="icon" /></div>
           <span>Work</span>
@@ -75,13 +79,6 @@ const MainLayout = () => {
           <div className="icon-wrapper"><IndianRupee className="icon" /></div>
           <span>Finance</span>
         </NavLink>
-        
-        {/* Center Floating Action Button Style for Home */}
-        <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav-item active center-fab" : "nav-item center-fab"}>
-          <div className="icon-wrapper"><Home className="icon" /></div>
-          <span>Home</span>
-        </NavLink>
-
         <NavLink to="/team" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
           <div className="icon-wrapper"><Users className="icon" /></div>
           <span>Team</span>
