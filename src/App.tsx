@@ -13,6 +13,9 @@ import Staff from './pages/Staff';
 import Finance from './pages/Finance';
 import Courses from './pages/Courses';
 import More from './pages/More';
+import Settings from './pages/Settings';
+import AuditLogs from './pages/AuditLogs';
+import BackupRestore from './pages/BackupRestore';
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const user = useAuthStore((state) => state.user);
@@ -58,6 +61,9 @@ const App = () => {
           <Route path="/finance" element={<Finance />} />
           <Route path="/courses" element={<Courses />} />
           <Route path="/more" element={<More />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/audit" element={<AuditLogs />} />
+          <Route path="/backup" element={<BackupRestore />} />
           {/* Add more routes later */}
         </Route>
       </Routes>

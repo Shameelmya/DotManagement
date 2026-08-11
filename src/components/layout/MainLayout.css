@@ -113,7 +113,7 @@
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 65px;
+  height: 85px; /* Increased height */
   background-color: var(--color-surface);
   backdrop-filter: var(--blur-lg);
   -webkit-backdrop-filter: var(--blur-lg);
@@ -124,6 +124,7 @@
   right: 0;
   z-index: 50;
   padding-bottom: env(safe-area-inset-bottom);
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
 }
 
 .mobile-bottom-nav .nav-item {
@@ -132,28 +133,48 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text-light);
-  gap: 2px;
+  gap: 4px;
   flex: 1;
+  text-decoration: none;
 }
 
-.mobile-bottom-nav .nav-item span {
-  font-size: 0.65rem;
-  font-weight: 500;
+.mobile-bottom-nav .icon-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background-color: transparent;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .mobile-bottom-nav .icon {
-  width: 24px;
-  height: 24px;
-  margin-bottom: 2px;
-  transition: transform var(--transition-fast);
+  width: 22px;
+  height: 22px;
+  transition: all 0.3s ease;
+  color: var(--color-text-light);
 }
 
-.mobile-bottom-nav .nav-item.active {
-  color: var(--color-primary);
+.mobile-bottom-nav .nav-item span {
+  font-size: 0.7rem;
+  font-weight: 600;
+  transition: color 0.3s ease;
+}
+
+/* Active State Design */
+.mobile-bottom-nav .nav-item.active .icon-wrapper {
+  background-color: var(--color-primary);
+  transform: translateY(-4px);
+  box-shadow: 0 4px 12px rgba(213, 55, 104, 0.3);
 }
 
 .mobile-bottom-nav .nav-item.active .icon {
-  transform: scale(1.1);
+  color: #ffffff; /* White icon when active */
+}
+
+.mobile-bottom-nav .nav-item.active span {
+  color: var(--color-primary);
 }
 
 /* --- Responsive Breakpoints --- */

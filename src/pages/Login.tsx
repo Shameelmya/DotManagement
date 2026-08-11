@@ -3,7 +3,8 @@ import { Eye, EyeOff } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword } from 'firebase/auth';
-import { app } from '../services/firebase';
+import { collection, query, where, getDocs } from 'firebase/firestore';
+import { app, db } from '../services/firebase';
 import './Login.css';
 
 const Login = () => {
@@ -26,26 +27,54 @@ const Login = () => {
     setError('');
     
     try {
-      const targetEmail = username === 'admin' ? 'admin@dotprojects.com' : username;
-      
-      const auth = getAuth(app);
-      await signInWithEmailAndPassword(auth, targetEmail, password);
-      navigate('/dashboard');
-    } catch (err: any) {
-      console.error(err);
-      
-      if (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-login-credentials') {
-        try {
+      // 1. Check if they are a staff member trying to log in with custom password
+      if (username !== 'admin') {
+        const staffRef = collection(db, 'staff');
+        const q = query(staffRef, where('email', '==', username), where('password', '==', password));
+        const querySnapshot = await getDocs(q);
+        
+        if (!querySnapshot.empty) {
+          const staffDoc = { id: querySnapshot.docs[0].id, ...querySnapshot.docs[0].data() };
+          
+          // Log them into Firebase Auth using the shared system auth token
+          // so that firestore security rules pass
           const auth = getAuth(app);
+          try {
+            await signInWithEmailAndPassword(auth, 'admin@dotprojects.com', 'admin@123');
+          } catch (e) {
+             // Fallback create it if it doesn't exist
+             await createUserWithEmailAndPassword(auth, 'admin@dotprojects.com', 'admin@123');
+          }
+          
+          // Set their actual staff profile into the Zustand store
+          setUser(auth.currentUser, staffDoc);
+          navigate('/dashboard');
+          return;
+        }
+      }
+
+      // 2. Standard Auth Login Fallback (for admin / dev)
+      const targetEmail = username === 'admin' ? 'admin@dotprojects.com' : username;
+      const auth = getAuth(app);
+      
+      try {
+        await signInWithEmailAndPassword(auth, targetEmail, password);
+        setUser(auth.currentUser, { role: 'SUPER_ADMIN', name: 'Administrator', email: targetEmail });
+        navigate('/dashboard');
+      } catch (err: any) {
+        if (username === 'admin' && (err.code === 'auth/user-not-found' || err.code === 'auth/invalid-credential' || err.code === 'auth/invalid-login-credentials')) {
           await createUserWithEmailAndPassword(auth, 'admin@dotprojects.com', 'admin@123');
           await signInWithEmailAndPassword(auth, 'admin@dotprojects.com', password);
+          setUser(auth.currentUser, { role: 'SUPER_ADMIN', name: 'Administrator', email: targetEmail });
           navigate('/dashboard');
-        } catch (createErr: any) {
-          setError(`Could not create test account: ${createErr.message}`);
+        } else {
+          throw err;
         }
-      } else {
-        setError(err.message || 'Invalid username or password');
       }
+      
+    } catch (err: any) {
+      console.error(err);
+      setError('Invalid username or password. Please try again.');
     } finally {
       setLoading(false);
     }

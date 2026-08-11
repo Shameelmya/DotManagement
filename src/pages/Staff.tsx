@@ -23,7 +23,8 @@ const Staff = () => {
     phone: '',
     designation: '',
     role: 'STAFF',
-    status: 'ACTIVE'
+    status: 'ACTIVE',
+    password: ''
   });
 
   useEffect(() => {
@@ -43,11 +44,12 @@ const Staff = () => {
         phone: staff.phone || '',
         designation: staff.designation || '',
         role: staff.role || 'STAFF',
-        status: staff.status || 'ACTIVE'
+        status: staff.status || 'ACTIVE',
+        password: staff.password || ''
       });
     } else {
       setEditingId(null);
-      setFormData({ name: '', email: '', phone: '', designation: '', role: 'STAFF', status: 'ACTIVE' });
+      setFormData({ name: '', email: '', phone: '', designation: '', role: 'STAFF', status: 'ACTIVE', password: '' });
     }
     setIsFormOpen(true);
   };
@@ -174,8 +176,12 @@ const Staff = () => {
           <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Sarah Smith" />
         </div>
         <div className="modal-form-group">
-          <label>Email Address</label>
+          <label>Email Address / Username</label>
           <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="e.g. sarah@dotprojects.com" />
+        </div>
+        <div className="modal-form-group">
+          <label>Login Password</label>
+          <input type="text" value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} placeholder="Set a password for this user" />
         </div>
         <div className="modal-form-group">
           <label>Phone Number</label>

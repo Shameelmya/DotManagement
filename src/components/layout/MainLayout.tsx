@@ -1,7 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import './MainLayout.css';
-import { Home, Briefcase, IndianRupee, Users, Menu, CheckSquare, BookOpen, LogOut } from 'lucide-react';
+import { Home, Briefcase, IndianRupee, Users, Menu, CheckSquare, BookOpen, LogOut, Settings, ShieldAlert, DatabaseBackup } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 
 const MainLayout = () => {
@@ -38,10 +38,13 @@ const MainLayout = () => {
           <NavLink to="/work/tasks" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><CheckSquare className="icon"/> Tasks</NavLink>
           
           <div className="nav-section-title">TEAM</div>
-          <NavLink to="/team" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><Users className="icon"/> Staff</NavLink>
-          
-          <div className="nav-section-title">COURSES</div>
+          <NavLink to="/team" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><Users className="icon"/> Staff & Team</NavLink>
           <NavLink to="/courses" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><BookOpen className="icon"/> Courses</NavLink>
+          
+          <div className="nav-section-title">SYSTEM</div>
+          <NavLink to="/settings" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><Settings className="icon"/> Settings</NavLink>
+          <NavLink to="/audit" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><ShieldAlert className="icon"/> Audit Logs</NavLink>
+          <NavLink to="/backup" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><DatabaseBackup className="icon"/> Backup & Restore</NavLink>
           
           <div className="nav-section-title">FINANCE</div>
           <NavLink to="/finance" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><IndianRupee className="icon"/> Overview</NavLink>
@@ -65,23 +68,23 @@ const MainLayout = () => {
       {/* Mobile Bottom Navigation */}
       <nav className="mobile-bottom-nav">
         <NavLink to="/dashboard" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-          <Home className="icon" />
+          <div className="icon-wrapper"><Home className="icon" /></div>
           <span>Home</span>
         </NavLink>
         <NavLink to="/work/projects" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-          <Briefcase className="icon" />
+          <div className="icon-wrapper"><Briefcase className="icon" /></div>
           <span>Work</span>
         </NavLink>
         <NavLink to="/finance" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-          <IndianRupee className="icon" />
+          <div className="icon-wrapper"><IndianRupee className="icon" /></div>
           <span>Finance</span>
         </NavLink>
         <NavLink to="/team" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-          <Users className="icon" />
+          <div className="icon-wrapper"><Users className="icon" /></div>
           <span>Team</span>
         </NavLink>
         <NavLink to="/more" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-          <Menu className="icon" />
+          <div className="icon-wrapper"><Menu className="icon" /></div>
           <span>More</span>
         </NavLink>
       </nav>
