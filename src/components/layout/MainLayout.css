@@ -109,22 +109,19 @@
 /* --- Mobile Bottom Nav --- */
 .mobile-bottom-nav {
   display: flex;
-  justify-content: center; /* Center icons together */
+  justify-content: space-around; /* Evenly space out icons to fill width */
   align-items: center; 
-  height: 85px; /* Bit more height */
+  height: 85px;
   background-color: #FFFFFF;
-  border-radius: 24px; /* Matches 16px inner radius perfectly */
+  border-radius: 24px;
   position: fixed;
   bottom: 12px;
-  left: 50%; /* Center the island */
-  transform: translateX(-50%); /* Center the island */
+  left: 16px; /* Match standard page padding */
+  right: 16px; /* Match standard page padding */
   z-index: 50;
   box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-  padding: 0 12px; /* Reduce horizontal white space */
-  gap: 4px; /* Tighter gap between items */
+  padding: 0 4px; /* Less padding since space-around adds it naturally */
   border: 1px solid var(--color-border-light);
-  width: max-content; /* Shrink-wrap around the icons */
-  max-width: 95%; /* Prevent overflowing on tiny screens */
 }
 
 .mobile-bottom-nav .nav-item {
@@ -133,8 +130,8 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text-light);
-  gap: 4px;
-  width: 58px; /* Perfect width for icons */
+  gap: 4px; /* Gap between icon and text */
+  width: 58px;
   text-decoration: none;
 }
 
