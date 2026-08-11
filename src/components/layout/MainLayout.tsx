@@ -1,25 +1,33 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import './MainLayout.css';
-import { Home, Briefcase, DollarSign, Users, Menu, CheckSquare, BookOpen } from 'lucide-react';
+import { Home, Briefcase, IndianRupee, Users, Menu, CheckSquare, BookOpen, LogOut } from 'lucide-react';
+import { useAuthStore } from '../../store/useAuthStore';
 
 const MainLayout = () => {
+  const logout = useAuthStore(state => state.logout);
+
   return (
     <div className="main-layout">
       {/* Mobile Header */}
       <header className="mobile-header">
-        <div className="logo-container">
+        <div className="logo-container" style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <img src="/logo.png" alt="Dot Projects" style={{ height: '32px', width: '32px', objectFit: 'cover', borderRadius: '50%' }} onError={(e) => e.currentTarget.style.display='none'}/>
+          <span style={{ fontWeight: 700, fontSize: '1.1rem', color: 'var(--color-text-main)' }}>Dot Projects</span>
         </div>
         <div className="header-actions">
+          <button className="btn-icon" onClick={logout} title="Logout" style={{ marginRight: '8px' }}>
+            <LogOut size={20} className="text-error" />
+          </button>
           <Menu className="icon" />
         </div>
       </header>
 
       {/* Desktop Sidebar (hidden on mobile) */}
       <aside className="desktop-sidebar">
-        <div className="sidebar-logo">
+        <div className="sidebar-logo" style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <img src="/logo.png" alt="Dot Projects" style={{ height: '40px', width: '40px', objectFit: 'cover', borderRadius: '50%' }} onError={(e) => e.currentTarget.style.display='none'}/>
+          <span style={{ fontWeight: 800, fontSize: '1.2rem', color: 'var(--color-text-main)', letterSpacing: '-0.5px' }}>Dot Projects</span>
         </div>
         <nav className="sidebar-nav">
           <div className="nav-section-title">MAIN</div>
@@ -36,8 +44,15 @@ const MainLayout = () => {
           <NavLink to="/courses" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><BookOpen className="icon"/> Courses</NavLink>
           
           <div className="nav-section-title">FINANCE</div>
-          <NavLink to="/finance" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><DollarSign className="icon"/> Overview</NavLink>
+          <NavLink to="/finance" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}><IndianRupee className="icon"/> Overview</NavLink>
         </nav>
+        
+        <div style={{ padding: '20px', marginTop: 'auto' }}>
+          <button className="btn-secondary" style={{ width: '100%', justifyContent: 'center', color: 'var(--color-error)', borderColor: 'var(--color-error)' }} onClick={logout}>
+            <LogOut size={18} />
+            <span>Logout</span>
+          </button>
+        </div>
       </aside>
 
       {/* Main Content Area */}
@@ -58,7 +73,7 @@ const MainLayout = () => {
           <span>Work</span>
         </NavLink>
         <NavLink to="/finance" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>
-          <DollarSign className="icon" />
+          <IndianRupee className="icon" />
           <span>Finance</span>
         </NavLink>
         <NavLink to="/team" className={({isActive}) => isActive ? "nav-item active" : "nav-item"}>

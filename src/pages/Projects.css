@@ -26,7 +26,7 @@
   align-items: center;
   gap: var(--spacing-2);
   background-color: var(--color-primary);
-  color: var(--color-white);
+  color: #ffffff;
   padding: var(--spacing-2) var(--spacing-4);
   border: none;
   border-radius: var(--radius-md);

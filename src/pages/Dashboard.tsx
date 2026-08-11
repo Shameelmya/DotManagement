@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuthStore } from '../store/useAuthStore';
-import { Briefcase, CheckSquare, DollarSign, Activity, AlertCircle } from 'lucide-react';
+import { Briefcase, CheckSquare, IndianRupee, Activity, AlertCircle } from 'lucide-react';
 import { dbService, Collections } from '../services/db';
 import './Dashboard.css';
 
@@ -89,7 +89,7 @@ const Dashboard = () => {
         </div>
         <div className="kpi-card glass-panel">
           <div className="kpi-icon-wrapper amber">
-            <DollarSign className="icon" />
+            <IndianRupee className="icon" />
           </div>
           <div className="kpi-info">
             <span className="kpi-label">Receivables</span>

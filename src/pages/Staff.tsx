@@ -1,12 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, MoreVertical, Mail, Phone, Shield, Users } from 'lucide-react';
+import { Plus, Search, Filter, Mail, Phone, Shield, Users } from 'lucide-react';
 import { dbService, Collections } from '../services/db';
+import { Modal } from '../components/ui/Modal';
+import { ActionMenu } from '../components/ui/ActionMenu';
+import { ConfirmDeleteModal } from '../components/ui/ConfirmDeleteModal';
 import './Staff.css';
 
 const Staff = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [staffList, setStaffList] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Modal states
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deletingStaff, setDeletingStaff] = useState<{id: string, name: string} | null>(null);
+
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    phone: '',
+    designation: '',
+    role: 'STAFF',
+    status: 'ACTIVE'
+  });
 
   useEffect(() => {
     const unsubscribe = dbService.subscribe(Collections.STAFF, (data) => {
@@ -15,6 +33,48 @@ const Staff = () => {
     });
     return () => unsubscribe();
   }, []);
+
+  const handleOpenForm = (staff?: any) => {
+    if (staff) {
+      setEditingId(staff.id);
+      setFormData({
+        name: staff.name || '',
+        email: staff.email || '',
+        phone: staff.phone || '',
+        designation: staff.designation || '',
+        role: staff.role || 'STAFF',
+        status: staff.status || 'ACTIVE'
+      });
+    } else {
+      setEditingId(null);
+      setFormData({ name: '', email: '', phone: '', designation: '', role: 'STAFF', status: 'ACTIVE' });
+    }
+    setIsFormOpen(true);
+  };
+
+  const handleSaveForm = async () => {
+    if (!formData.name.trim() || !formData.email.trim()) return;
+    try {
+      if (editingId) {
+        await dbService.update(Collections.STAFF, editingId, formData);
+      } else {
+        await dbService.create(Collections.STAFF, formData);
+      }
+      setIsFormOpen(false);
+    } catch (err) {
+      console.error("Failed to save staff member", err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deletingStaff) {
+      try {
+        await dbService.delete(Collections.STAFF, deletingStaff.id);
+      } catch (err) {
+        console.error("Failed to delete staff member", err);
+      }
+    }
+  };
 
   const filteredStaff = staffList.filter(s => 
     s.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -28,20 +88,7 @@ const Staff = () => {
           <h1>Staff Directory</h1>
           <p>Manage team members, roles, and access.</p>
         </div>
-        <button className="btn-primary" onClick={() => {
-            const name = prompt("Enter staff name:");
-            const email = prompt("Enter staff email:");
-            if (name && email) {
-                dbService.create(Collections.STAFF, {
-                    name,
-                    email,
-                    role: 'STAFF',
-                    designation: 'New Employee',
-                    phone: 'N/A',
-                    status: 'ACTIVE'
-                });
-            }
-        }}>
+        <button className="btn-primary" onClick={() => handleOpenForm()}>
           <Plus size={20} />
           <span>Add Staff</span>
         </button>
@@ -79,7 +126,15 @@ const Staff = () => {
             <div className="staff-card glass-panel" key={staff.id}>
               <div className="staff-card-header">
                 <div className="staff-avatar">{staff.name?.substring(0, 2).toUpperCase()}</div>
-                <button className="btn-icon"><MoreVertical size={16}/></button>
+                <div className="ms-auto">
+                  <ActionMenu 
+                    onEdit={() => handleOpenForm(staff)}
+                    onDelete={() => {
+                      setDeletingStaff({ id: staff.id, name: staff.name });
+                      setIsDeleteOpen(true);
+                    }}
+                  />
+                </div>
               </div>
               
               <div className="staff-card-body">
@@ -93,7 +148,7 @@ const Staff = () => {
                   </div>
                   <div className="contact-item">
                     <Phone size={14} className="text-muted"/>
-                    <span>{staff.phone}</span>
+                    <span>{staff.phone || 'N/A'}</span>
                   </div>
                 </div>
               </div>
@@ -111,6 +166,56 @@ const Staff = () => {
           ))}
         </div>
       )}
+
+      {/* Forms & Modals */}
+      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Staff Member" : "Add Staff Member"}>
+        <div className="modal-form-group">
+          <label>Full Name</label>
+          <input type="text" value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Sarah Smith" />
+        </div>
+        <div className="modal-form-group">
+          <label>Email Address</label>
+          <input type="email" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} placeholder="e.g. sarah@dotprojects.com" />
+        </div>
+        <div className="modal-form-group">
+          <label>Phone Number</label>
+          <input type="tel" value={formData.phone} onChange={e => setFormData({...formData, phone: e.target.value})} placeholder="e.g. +91 98765 43210" />
+        </div>
+        <div className="modal-form-group">
+          <label>Designation / Job Title</label>
+          <input type="text" value={formData.designation} onChange={e => setFormData({...formData, designation: e.target.value})} placeholder="e.g. Senior UI Designer" />
+        </div>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <div className="modal-form-group" style={{ flex: 1 }}>
+            <label>System Role</label>
+            <select value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+              <option value="STAFF">Staff (Standard)</option>
+              <option value="MANAGER">Manager</option>
+              <option value="FINANCE">Finance</option>
+              <option value="ADMIN">Administrator</option>
+            </select>
+          </div>
+          <div className="modal-form-group" style={{ flex: 1 }}>
+            <label>Account Status</label>
+            <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+              <option value="ACTIVE">Active</option>
+              <option value="INACTIVE">Inactive</option>
+              <option value="SUSPENDED">Suspended</option>
+            </select>
+          </div>
+        </div>
+        <div className="modal-actions">
+          <button className="btn-secondary" onClick={() => setIsFormOpen(false)}>Cancel</button>
+          <button className="btn-primary" onClick={handleSaveForm}>Save Staff Member</button>
+        </div>
+      </Modal>
+
+      <ConfirmDeleteModal 
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={handleDelete}
+        itemName={deletingStaff?.name || 'this staff member'}
+      />
     </div>
   );
 };

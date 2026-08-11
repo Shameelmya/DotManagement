@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Search, Filter, Image, Video, Monitor, MoreVertical, ListTodo } from 'lucide-react';
+import { Plus, Search, Filter, Image, Video, Monitor, ListTodo } from 'lucide-react';
 import { dbService, Collections } from '../services/db';
+import { Modal } from '../components/ui/Modal';
+import { ActionMenu } from '../components/ui/ActionMenu';
+import { ConfirmDeleteModal } from '../components/ui/ConfirmDeleteModal';
 import './Tasks.css';
 
 const getCategoryIcon = (category: string) => {
@@ -17,6 +20,22 @@ const Tasks = () => {
   const [tasks, setTasks] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
+  // Modal states
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isDeleteOpen, setIsDeleteOpen] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [deletingTask, setDeletingTask] = useState<{id: string, title: string} | null>(null);
+  
+  const [formData, setFormData] = useState({
+    title: '',
+    project: '',
+    category: 'Poster',
+    status: 'BACKLOG',
+    priority: 'Medium',
+    due: '',
+    assignee: 'Unassigned'
+  });
+
   useEffect(() => {
     const unsubscribe = dbService.subscribe(Collections.TASKS, (data) => {
       setTasks(data);
@@ -24,6 +43,49 @@ const Tasks = () => {
     });
     return () => unsubscribe();
   }, []);
+
+  const handleOpenForm = (task?: any) => {
+    if (task) {
+      setEditingId(task.id);
+      setFormData({
+        title: task.title || '',
+        project: task.project || '',
+        category: task.category || 'Poster',
+        status: task.status || 'BACKLOG',
+        priority: task.priority || 'Medium',
+        due: task.due || '',
+        assignee: task.assignee || 'Unassigned'
+      });
+    } else {
+      setEditingId(null);
+      setFormData({ title: '', project: '', category: 'Poster', status: 'BACKLOG', priority: 'Medium', due: '', assignee: 'Unassigned' });
+    }
+    setIsFormOpen(true);
+  };
+
+  const handleSaveForm = async () => {
+    if (!formData.title.trim()) return;
+    try {
+      if (editingId) {
+        await dbService.update(Collections.TASKS, editingId, formData);
+      } else {
+        await dbService.create(Collections.TASKS, formData);
+      }
+      setIsFormOpen(false);
+    } catch (err) {
+      console.error("Failed to save task", err);
+    }
+  };
+
+  const handleDelete = async () => {
+    if (deletingTask) {
+      try {
+        await dbService.delete(Collections.TASKS, deletingTask.id);
+      } catch (err) {
+        console.error("Failed to delete task", err);
+      }
+    }
+  };
 
   const filteredTasks = tasks.filter(t => 
     t.title?.toLowerCase().includes(searchTerm.toLowerCase()) || 
@@ -37,20 +99,7 @@ const Tasks = () => {
           <h1>Tasks</h1>
           <p>Track all production tasks and their statuses.</p>
         </div>
-        <button className="btn-primary" onClick={() => {
-            const title = prompt("Enter task title:");
-            if (title) {
-                dbService.create(Collections.TASKS, {
-                    title,
-                    project: 'General',
-                    category: 'Poster',
-                    status: 'BACKLOG',
-                    priority: 'Medium',
-                    due: 'TBD',
-                    assignee: 'Unassigned'
-                });
-            }
-        }}>
+        <button className="btn-primary" onClick={() => handleOpenForm()}>
           <Plus size={20} />
           <span>New Task</span>
         </button>
@@ -93,7 +142,15 @@ const Tasks = () => {
                 <span className={`task-priority priority-${task.priority?.toLowerCase()}`}>
                   {task.priority}
                 </span>
-                <button className="btn-icon ms-auto"><MoreVertical size={16}/></button>
+                <div className="ms-auto">
+                  <ActionMenu 
+                    onEdit={() => handleOpenForm(task)}
+                    onDelete={() => {
+                      setDeletingTask({ id: task.id, title: task.title });
+                      setIsDeleteOpen(true);
+                    }}
+                  />
+                </div>
               </div>
               
               <div className="task-card-body">
@@ -120,6 +177,68 @@ const Tasks = () => {
           ))}
         </div>
       )}
+
+      {/* Forms & Modals */}
+      <Modal isOpen={isFormOpen} onClose={() => setIsFormOpen(false)} title={editingId ? "Edit Task" : "New Task"}>
+        <div className="modal-form-group">
+          <label>Task Title</label>
+          <input type="text" value={formData.title} onChange={e => setFormData({...formData, title: e.target.value})} placeholder="e.g. Design Homepage" />
+        </div>
+        <div className="modal-form-group">
+          <label>Project</label>
+          <input type="text" value={formData.project} onChange={e => setFormData({...formData, project: e.target.value})} placeholder="e.g. Website Redesign" />
+        </div>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <div className="modal-form-group" style={{ flex: 1 }}>
+            <label>Category</label>
+            <select value={formData.category} onChange={e => setFormData({...formData, category: e.target.value})}>
+              <option value="Poster">Poster</option>
+              <option value="Video">Video</option>
+              <option value="Website">Website</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+          <div className="modal-form-group" style={{ flex: 1 }}>
+            <label>Priority</label>
+            <select value={formData.priority} onChange={e => setFormData({...formData, priority: e.target.value})}>
+              <option value="High">High</option>
+              <option value="Medium">Medium</option>
+              <option value="Low">Low</option>
+            </select>
+          </div>
+        </div>
+        <div style={{ display: 'flex', gap: '16px' }}>
+          <div className="modal-form-group" style={{ flex: 1 }}>
+            <label>Status</label>
+            <select value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+              <option value="BACKLOG">Backlog</option>
+              <option value="TODO">To Do</option>
+              <option value="IN_PROGRESS">In Progress</option>
+              <option value="REVIEW">Review</option>
+              <option value="COMPLETED">Completed</option>
+            </select>
+          </div>
+          <div className="modal-form-group" style={{ flex: 1 }}>
+            <label>Due Date</label>
+            <input type="date" value={formData.due} onChange={e => setFormData({...formData, due: e.target.value})} />
+          </div>
+        </div>
+        <div className="modal-form-group">
+          <label>Assignee</label>
+          <input type="text" value={formData.assignee} onChange={e => setFormData({...formData, assignee: e.target.value})} placeholder="e.g. John Doe" />
+        </div>
+        <div className="modal-actions">
+          <button className="btn-secondary" onClick={() => setIsFormOpen(false)}>Cancel</button>
+          <button className="btn-primary" onClick={handleSaveForm}>Save Task</button>
+        </div>
+      </Modal>
+
+      <ConfirmDeleteModal 
+        isOpen={isDeleteOpen}
+        onClose={() => setIsDeleteOpen(false)}
+        onConfirm={handleDelete}
+        itemName={deletingTask?.title || 'this task'}
+      />
     </div>
   );
 };
